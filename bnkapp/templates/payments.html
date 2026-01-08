@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skandia&nbsp;Bank(SKB) - Payments</title>
+    {% load static %}
+    {% include 'includes/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'CSS/payments.css' %}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="logo">Skandia&nbsp;Bank(SKB)</div>
+      {% if user.is_authenticated %}
+        {% if has_unread_admin_message %}
+          <div class="user-greeting">🔔Hi, {{ user.username|title }} you have a new message on live chat💬.</div>
+        {% endif %}
+      {% endif %}
+      <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'payments' %}" class="active">Payments</a>
+        <a href="{% url 'support' %}">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </nav>
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'payments' %}" class="active">Payments</a>
+        <a href="{% url 'support' %}">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </div>
+    </header>
+    <section class="payment-header">
+      <div class="payment-header-content">
+        <h1>Payments & Transfers</h1>
+        <p>Send money between your accounts or to others securely and instantly. Schedule payments, save recipients, and track your spending.</p>
+      </div>
+      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Banking" />
+    </section>
+    <div class="analytics-card">
+      <h2>Spending Analytics (Last 7 Payments)</h2>
+      <canvas id="analyticsChart" class="analytics-chart"></canvas>
+    </div>
+    <main class="payment-main">
+      <div class="card">
+        <h2>Make a Payment</h2>
+        <div class="saved-recipients" id="savedRecipients"></div>
+        <form class="payment-form" id="paymentForm" autocomplete="off" method="post" action="{% url 'api_create_payment' %}">
+          {% csrf_token %}
+          <label for="fromAccount">From Account</label>
+          <select id="fromAccount" name="from_account" required>
+            {% for account in accounts_list %}
+              <option value="{{ account.id }}">{{ account.account_type|title }} ****{{ account.account_number|slice:'4' }} ${{ account.balance }}</option>
+            {% endfor %}
+          </select>
+          <label for="toType">To</label>
+          <select id="toType" name="to_type" required>
+            <option value="internal">My Other Account</option>
+            <option value="external">External Recipient</option>
+          </select>
+          <div id="toAccountInternalDiv">
+            <label for="toAccountInternal">To Account</label>
+            <select id="toAccountInternal" name="to_account">
+              {% for account in accounts_list %}
+                <option value="{{ account.id }}">{{ account.account_type|title }} ****{{ account.account_number|slice:'-4' }} ${{ account.balance }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div id="toAccountExternalDiv" style="display: none">
+            <label for="toAccountExternalId">Recipient User ID (e.g. SKB-90-2025)</label>
+            <input type="text" id="toAccountExternalId" name="recipient_user_id" placeholder="User ID (e.g. SKB-90-2025)" />
+            <div class="recipient-error" id="recipientError"></div>
+            <div class="recipient-info" id="recipientInfo" style="display: none"></div>
+            <button type="button" id="saveRecipientBtn" style="margin-bottom: 1rem">Save Recipient</button>
+          </div>
+          <label for="amount">Amount ($)</label>
+          <input type="number" id="amount" name="amount" min="1" step="0.01" required />
+          <label for="category">Category</label>
+          <select id="category" name="category">
+            <option value="General">General</option>
+            <option value="Rent">Rent</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Travel">Travel</option>
+            <option value="Other">Other</option>
+          </select>
+          <label for="note">Note</label>
+          <textarea id="note" name="note" placeholder="Add a note (optional)"></textarea>
+          <label for="scheduleDate">Schedule Payment</label>
+          <input type="date" id="scheduleDate" name="schedule_date" />
+          <label for="recurring">Recurring</label>
+          <select id="recurring" name="recurring">
+            <option value="none">No</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+          <button type="submit">Send Payment</button>
+          <div class="payment-success" id="paymentSuccess" style="display: none"></div>
+          <div class="payment-error" id="paymentError" style="display: none"></div>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Payment History</h2>
+        <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+        <ul class="payment-history-list" id="paymentHistory"></ul>
+        <h3 style="margin-top: 1.5rem">Scheduled Payments</h3>
+        <ul class="payment-history-list" id="scheduledPayments"></ul>
+      </div>
+    </main>
+    <div class="help-section">
+      <h3>Need Help?</h3>
+      <ul>
+        <li>For failed payments, check your account balance and recipient details.</li>
+        <li>Scheduled and recurring payments will appear in the "Scheduled Payments" list.</li>
+        <li>Click "Export CSV" to download your payment history.</li>
+        <li>
+          Contact <a href="mailto:support@skb.com">support@skb.com</a> or use our <a href="#">in-app chat</a> for assistance.
+        </li>
+      </ul>
+    </div>
+    <!-- Confirmation Modal -->
+    <div class="modal-bg" id="confirmModalBg">
+      <div class="modal" id="confirmModal">
+        <h3>Confirm Payment</h3>
+        <div id="confirmDetails"></div>
+        <button id="confirmYes">Confirm</button>
+        <button class="cancel" id="confirmNo">Cancel</button>
+      </div>
+    </div>
+    <!-- PIN Modal -->
+    <div class="modal-bg" id="pinModalBg">
+      <div class="modal" id="pinModal">
+        <h3>Enter PIN</h3>
+        <p>Enter your credit card number as PIN to authorize the payment.</p>
+        <input type="password" id="pinInput" placeholder="Enter PIN" />
+        <button id="pinSubmit">Submit</button>
+        <button class="cancel" id="pinCancel">Cancel</button>
+      </div>
+    </div>
+    <footer id="footerSection">{{gen.copyright|safe}}</footer>
+    <!-- External payments.js removed to enforce server-side processing -->
+    {% if messages %}
+      {% if user.is_authenticated and not user.is_superuser %}
+        <style>
+          .skb-toast-container { position: fixed; right: 1rem; top: 1rem; z-index: 1200; }
+          .skb-toast { background: #333; color: #fff; padding: .75rem 1rem; margin-bottom: .5rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); min-width: 220px; }
+          .skb-toast.success { background: #1e7e34; }
+          .skb-toast.error { background: #c82333; }
+          .skb-toast.info { background: #007bff; }
+        </style>
+        <div class="skb-toast-container" id="skbToastContainer">
+          {% for message in messages %}
+            <div class="skb-toast {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        <script>
+          (function(){
+            const container = document.getElementById('skbToastContainer');
+            if(!container) return;
+            // Auto-dismiss toasts after 5s
+            Array.from(container.children).forEach((el, idx) => {
+              setTimeout(() => {
+                el.style.transition = 'opacity 0.4s, transform 0.4s';
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-8px)';
+                setTimeout(() => el.remove(), 450);
+              }, 5000 + idx * 300);
+            });
+          })();
+        </script>
+      {% else %}
+        <script>
+          {% for message in messages %}
+            alert("{{ message }}");
+          {% endfor %}
+        </script>
+      {% endif %}
+    {% endif %}
+
+    <script>
+      // Pass Django data to JavaScript
+      const djangoData = {
+        user: {
+          id: {{ user.id|default:0 }},
+          username: "{{ user.username|default:'' }}",
+          is_authenticated: {% if user.is_authenticated %}true{% else %}false{% endif %}
+        },
+        accounts: {{ accounts|safe }},
+        recipients: {{ recipients|safe }},
+        payments: {{ payments|safe }},
+        scheduledPayments: {{ scheduled_payments|safe }},
+        csrfToken: "{{ csrf_token }}",
+        creditCardNumber: "{{ credit_card_number }}"
+      };
+
+      // Minimal UI JS for form toggling and recipient management
+      document.addEventListener('DOMContentLoaded', function() {
+        const toTypeSelect = document.getElementById('toType');
+        const internalDiv = document.getElementById('toAccountInternalDiv');
+        const externalDiv = document.getElementById('toAccountExternalDiv');
+        const recipientInput = document.getElementById('toAccountExternalId');
+        const recipientError = document.getElementById('recipientError');
+        const recipientInfo = document.getElementById('recipientInfo');
+        const saveRecipientBtn = document.getElementById('saveRecipientBtn');
+        const savedRecipientsDiv = document.getElementById('savedRecipients');
+
+        // Toggle display based on toType
+        toTypeSelect.addEventListener('change', function() {
+          if (this.value === 'internal') {
+            internalDiv.style.display = 'block';
+            externalDiv.style.display = 'none';
+          } else {
+            internalDiv.style.display = 'none';
+            externalDiv.style.display = 'block';
+          }
+        });
+
+        // Lookup recipient on input change
+        recipientInput.addEventListener('input', function() {
+          const userId = this.value.trim().toUpperCase();
+          if (userId.length < 5) return; // Minimum length
+          fetch('{% url "api_lookup_recipient" %}?user_id=' + encodeURIComponent(userId), {
+            method: 'GET',
+            headers: {
+              'X-CSRFToken': djangoData.csrfToken
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.found) {
+              recipientInfo.textContent = `Recipient: ${data.name}`;
+              recipientInfo.style.display = 'block';
+              recipientError.style.display = 'none';
+            } else {
+              recipientInfo.style.display = 'none';
+              recipientError.textContent = data.error || 'User ID not found';
+              recipientError.style.display = 'block';
+            }
+          })
+          .catch(error => {
+            recipientError.textContent = 'Error looking up recipient';
+            recipientError.style.display = 'block';
+            recipientInfo.style.display = 'none';
+          });
+        });
+
+        // Save recipient
+        saveRecipientBtn.addEventListener('click', function() {
+          const userId = recipientInput.value.trim().toUpperCase();
+          const name = recipientInfo.textContent.replace('Recipient: ', '');
+          if (!userId || !name) return;
+          fetch('{% url "api_save_recipient" %}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': djangoData.csrfToken
+            },
+            body: JSON.stringify({ user_id: userId, name: name })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('Recipient saved successfully');
+              // Optionally refresh saved recipients
+              location.reload();
+            } else {
+              alert('Error saving recipient: ' + (data.error || 'Unknown error'));
+            }
+          })
+          .catch(error => {
+            alert('Error saving recipient');
+          });
+        });
+
+        // Render saved recipients
+        if (djangoData.recipients && djangoData.recipients.length > 0) {
+          let html = '<h3>Saved Recipients</h3><ul>';
+          djangoData.recipients.forEach(recipient => {
+            html += `<li>${recipient.name} (${recipient.user_id})</li>`;
+          });
+          html += '</ul>';
+          savedRecipientsDiv.innerHTML = html;
+        }
+
+        // Render payment history
+        const paymentHistoryDiv = document.getElementById('paymentHistory');
+        if (djangoData.payments && djangoData.payments.length > 0) {
+          let html = '<ul>';
+          djangoData.payments.forEach(payment => {
+            const direction = payment.direction === 'incoming' ? '(Received)' : '(Sent)';
+            html += `<li>${payment.date} - ${direction} From: ${payment.from} To: ${payment.to} - $${payment.amount} - ${payment.category}</li>`;
+          });
+          html += '</ul>';
+          paymentHistoryDiv.innerHTML = html;
+        }
+
+        // Render scheduled payments with cancel buttons
+        const scheduledPaymentsDiv = document.getElementById('scheduledPayments');
+        if (djangoData.scheduledPayments && djangoData.scheduledPayments.length > 0) {
+          let html = '<ul>';
+          const today = new Date().toISOString().split('T')[0];
+          djangoData.scheduledPayments.forEach(sp => {
+            html += `<li>${sp.date} - From: ${sp.from} To: ${sp.to} - $${sp.amount} - ${sp.category}`;
+            if (sp.status === 'Scheduled' && sp.date >= today) {
+              html += ` <button class="cancel-scheduled" data-id="${sp.id}">Cancel</button>`;
+            }
+            html += ` - ${sp.status}</li>`;
+          });
+          html += '</ul>';
+          scheduledPaymentsDiv.innerHTML = html;
+
+          // Add event listeners for cancel buttons
+          document.querySelectorAll('.cancel-scheduled').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const id = this.getAttribute('data-id');
+              fetch('{% url "api_cancel_scheduled_payment" %}', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': djangoData.csrfToken
+                },
+                body: JSON.stringify({ id: id })
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  alert(`Dear ${djangoData.user.username},\n${data.message}`);
+                  location.reload(); // Refresh to update list
+                } else {
+                  alert(`Dear ${djangoData.user.username},\nError message: ${data.error}`);
+                }
+              })
+              .catch(error => {
+                alert('Error cancelling payment');
+              });
+            });
+          });
+        }
+
+        // Form submission with confirmation and PIN
+        const paymentForm = document.getElementById('paymentForm');
+        const confirmModalBg = document.getElementById('confirmModalBg');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmDetails = document.getElementById('confirmDetails');
+        const confirmYes = document.getElementById('confirmYes');
+        const confirmNo = document.getElementById('confirmNo');
+        const pinModalBg = document.getElementById('pinModalBg');
+        const pinModal = document.getElementById('pinModal');
+        const pinInput = document.getElementById('pinInput');
+        const pinSubmit = document.getElementById('pinSubmit');
+        const pinCancel = document.getElementById('pinCancel');
+
+        paymentForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          // Gather details
+          const fromAccount = document.getElementById('fromAccount').selectedOptions[0].text;
+          const toType = document.getElementById('toType').value;
+          const amount = document.getElementById('amount').value;
+          const category = document.getElementById('category').value;
+          const note = document.getElementById('note').value;
+          let toDetails = '';
+          if (toType === 'internal') {
+            toDetails = document.getElementById('toAccountInternal').selectedOptions[0].text;
+          } else {
+            toDetails = recipientInfo.textContent || 'Unknown Recipient';
+          }
+          confirmDetails.innerHTML = `
+            <p><strong>From:</strong> ${fromAccount}</p>
+            <p><strong>To:</strong> ${toDetails}</p>
+            <p><strong>Amount:</strong> $${amount}</p>
+            <p><strong>Category:</strong> ${category}</p>
+            <p><strong>Note:</strong> ${note || 'None'}</p>
+          `;
+          confirmModalBg.style.display = 'flex';
+        });
+
+        confirmYes.addEventListener('click', function() {
+          confirmModalBg.style.display = 'none';
+          pinModalBg.style.display = 'flex';
+          pinInput.focus();
+        });
+
+        confirmNo.addEventListener('click', function() {
+          confirmModalBg.style.display = 'none';
+        });
+
+        pinSubmit.addEventListener('click', function() {
+          const pin = pinInput.value.trim();
+          if (pin === djangoData.creditCardNumber) {
+            pinModalBg.style.display = 'none';
+            paymentForm.submit();
+          } else {
+            alert('Invalid PIN. Please try again.');
+            pinInput.value = '';
+            pinInput.focus();
+          }
+        });
+
+        pinCancel.addEventListener('click', function() {
+          pinModalBg.style.display = 'none';
+        });
+
+        // Draw analytics chart
+        drawAnalyticsChart();
+      });
+
+      function exportCSV() {
+        const payments = djangoData.payments;
+        if (!payments || payments.length === 0) {
+          alert('No payment history to export.');
+          return;
+        }
+        // Create CSV header
+        let csv = 'Date,Direction,From,To,Amount,Category\n';
+        // Add rows
+        payments.forEach(p => {
+          csv += `${p.date},${p.direction},${p.from},${p.to},${p.amount},${p.category}\n`;
+        });
+        // Create blob and download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'payment_history.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+
+      function drawAnalyticsChart() {
+        const ctx = document.getElementById('analyticsChart').getContext('2d');
+        // Get last 7 outgoing payments
+        const outgoingPayments = djangoData.payments.filter(p => p.direction === 'outgoing').slice(0, 7);
+        // Group by category
+        const categoryTotals = {};
+        outgoingPayments.forEach(p => {
+          if (!categoryTotals[p.category]) {
+            categoryTotals[p.category] = 0;
+          }
+          categoryTotals[p.category] += parseFloat(p.amount);
+        });
+        const labels = Object.keys(categoryTotals);
+        const data = Object.values(categoryTotals);
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Spending by Category',
+              data: data,
+              backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40',
+                '#FF6384'
+              ],
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Spending Analytics (Last 7 Payments)'
+              }
+            }
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

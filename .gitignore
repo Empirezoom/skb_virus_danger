@@ -1,0 +1,46 @@
+# Python virtual environments
+env/
+test_env/
+
+# Django / Python
+*.py[cod]
+__pycache__/
+*.so
+*.egg-info/
+dist/
+build/
+
+# Media and user uploaded files
+media/
+media/*
+
+# Sensitive files
+.env
+.venv
+*.pem
+*.key
+secrets.json
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+
+
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+env

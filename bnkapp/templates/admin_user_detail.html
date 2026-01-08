@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SKB Admin | User Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{% static 'CSS/admin_dashboard.css' %}z" />
+  </head>
+  <body>
+    <header>
+      <div class="logo-area">
+        <i data-lucide="shield-check" size="26"></i>
+        <span>SKB ADMIN</span>
+      </div>
+      <nav class="nav-group">
+        <a href="{% url 'admin_dashboard' %}" class="nav-link">
+          <i data-lucide="layout-dashboard" size="18"></i>
+          <span>Back to Dashboard</span>
+        </a>
+        <a href="#" class="nav-link logout"><i data-lucide="log-out" size="18"></i> <span>Logout</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="glass-panel">
+        <div class="panel-header">
+          <h2 style="font-size: 1.1rem; font-weight: 800">User Details: {{ customer.first_name }} {{ customer.last_name }}</h2>
+        </div>
+
+        <div style="padding: 20px;">
+          <h3>Personal Information</h3>
+          <p>
+            <strong>Username:</strong> {{ customer.user.username }}
+          </p>
+          <p>
+            <strong>Email:</strong> {{ customer.email }}
+          </p>
+          <p>
+            <strong>First Name:</strong> {{ customer.first_name }}
+          </p>
+          <p>
+            <strong>Middle Name:</strong> {{ customer.middle_name }}
+          </p>
+          <p>
+            <strong>Last Name:</strong> {{ customer.last_name }}
+          </p>
+          <p>
+            <strong>Phone:</strong> {{ customer.country_code }} {{ customer.phone }}
+          </p>
+          <p>
+            <strong>SSN:</strong> {{ customer.ssn|default:'N/A' }}
+          </p>
+          <p>
+            <strong>SKB User ID:</strong> {{ customer.skb_user_id }}
+          </p>
+          <p>
+            <strong>Approved:</strong> {{ customer.approved|yesno:'Yes,No' }}
+          </p>
+          <p>
+            <strong>ID Type:</strong> {{ customer.id_type|default:'N/A' }}
+          </p>
+          <p>
+            <strong>Created At:</strong> {{ customer.created_at }}
+          </p>
+
+          <h3>Accounts</h3>
+          {% for account in accounts %}
+            <div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0;">
+              <p>
+                <strong>Type:</strong> {{ account.get_account_type_display }}
+              </p>
+              <p>
+                <strong>Account Number:</strong> {{ account.account_number }}
+              </p>
+              <p>
+                <strong>Balance:</strong> ${{ account.balance }}
+              </p>
+              <p>
+                <strong>Created At:</strong> {{ account.created_at }}
+              </p>
+            </div>
+          {% empty %}
+            <p>No accounts found.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </main>
+
+    <script src="{% static 'JS/admin_dashboard.js' %}"></script>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skandia&nbsp;Bank(SKB) - Account Details</title>
+    {% load static %}
+    {% include 'includes/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'CSS/account.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Skandia&nbsp;Bank(SKB)</div>
+      {% if user.is_authenticated %}
+        {% if has_unread_admin_message %}
+          <div class="user-greeting">🔔Hi, {{ user.username|title }} you have a new message on live chat💬.</div>
+        {% endif %}
+      {% endif %}
+      <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}" class="active">Accounts</a>
+        <a href="{% url 'payments' %}">Payments</a>
+        <a href="{% url 'support' %}">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </nav>
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}" class="active">Accounts</a>
+        <a href="#">Payments</a>
+        <a href="#">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </div>
+    </header>
+    <section class="account-header">
+      <div class="account-header-content">
+        <form method="get" style="margin-bottom: 1rem;">
+          <label for="accountSelect" style="font-weight: 500">Select Account:</label>
+          <select name="account_type" id="accountSelect">
+            <option value="checking" {% if account_type == 'checking' %}selected{% endif %}>Checking</option>
+            <option value="savings" {% if account_type == 'savings' %}selected{% endif %}>Savings</option>
+            <option value="credit_card" {% if account_type == 'credit_card' %}selected{% endif %}>Credit Card 💳</option>
+          </select>
+          <button type="submit" style="margin-left: 0.5rem; padding: 0.5rem 1rem; background: var(--secondary); color: white; border: none; border-radius: 4px; cursor: pointer;">Switch</button>
+        </form>
+        {% if selected_account %}
+          <div class="account-balance">Balance: ${{ selected_account.balance }}</div>
+          <div class="account-number">Account Number: ****{{ selected_account.account_number|slice:'-4:' }}</div>
+          <h1>{{ selected_account.get_account_type_display }} Account</h1>
+        {% else %}
+          <h1>Account Details</h1>
+        {% endif %}
+        <p>View your account details, recent transactions, and manage your funds securely.</p>
+      </div>
+      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Banking" />
+    </section>
+    <main class="account-main">
+      {% if profile %}
+        <div class="card">
+          <h2>Account Summary</h2>
+          <p>
+            <strong>SKB User ID:</strong> {{ profile.skb_user_id }}
+          </p>
+          <div id="accountNumbers">
+            {% for account in profile.accounts.all %}
+              <p data-account-id="{{ account.id }}">
+                <strong>{{ account.get_account_type_display }} Account:</strong> ****{{ account.account_number|slice:'-4:' }} - Balance: <span style="color: {% if account.balance > 0 %}green{% elif account.balance < 0 %}red{% else %}black{% endif %};">${{ account.balance }}</span>
+              </p>
+            {% endfor %}
+          </div>
+          <button id="viewFullNumbers" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">View Full Account Numbers</button>
+        </div>
+      {% endif %}
+      <div class="card">
+        <h2>Quick Actions</h2>
+        <div class="quick-actions">
+          <a href="{% url 'payments' %}">Transfer Funds</a>
+          <a href="{% url 'livechat' %}">Add Balance</a>
+          <a href="#">Withdrawal Funds</a>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Recent Transactions</h2>
+        {% if transactions %}
+          <ul class="account-list">
+            {% for tx in transactions %}
+              <li>
+                <span>{{ tx.date|date:"M d, Y" }} <small>{{ tx.description }}</small></span>
+                <span style="font-weight:bold; color:{% if tx.amount >= 0 %}#388e3c{% else %}#d32f2f{% endif %};">{% if tx.amount < 0 %}-{% endif %}${{ tx.abs_amount }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No transaction has been made yet.</p>
+        {% endif %}
+      </div>
+    </main>
+    <footer id="footerSection">{{gen.copyright|safe}}</footer>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const viewButton = document.getElementById('viewFullNumbers');
+        const accountNumbersDiv = document.getElementById('accountNumbers');
+
+        viewButton.addEventListener('click', function() {
+          const userId = prompt('Enter your SKB User ID:');
+          if (!userId) return;
+          const password = prompt('Enter your password:');
+          if (!password) return;
+
+          fetch('{% url "api_verify_credentials" %}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ user_id: userId, password: password })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Update the display
+              let html = '';
+              data.accounts.forEach(account => {
+                const balanceColor = account.balance > 0 ? 'green' : account.balance < 0 ? 'red' : 'black';
+                html += `
+                  <p>
+                    <strong>${account.type} Account:</strong> ${account.number} 
+                    <button class="copy-btn" data-number="${account.number}" style="margin-left: 0.5rem; padding: 0.2rem 0.5rem; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Copy</button>
+                    - Balance: <span style="color: ${balanceColor};">$${account.balance}</span>
+                  </p>
+                `;
+              });
+              accountNumbersDiv.innerHTML = html;
+
+              // Add copy functionality
+              document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                  const number = this.getAttribute('data-number');
+                  navigator.clipboard.writeText(number).then(() => {
+                    alert('Account number copied to clipboard!');
+                  }).catch(err => {
+                    alert('Failed to copy: ' + err);
+                  });
+                });
+              });
+            } else {
+              alert('Error: ' + (data.error || 'Verification failed'));
+            }
+          })
+          .catch(error => {
+            alert('Error verifying credentials');
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

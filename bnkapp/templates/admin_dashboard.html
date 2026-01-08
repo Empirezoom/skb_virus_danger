@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SKB Admin | Elite Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{% static 'CSS/admin_dashboard.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo-area">
+        <i data-lucide="shield-check" size="26"></i>
+        <span>SKB ADMIN</span>
+      </div>
+      <nav class="nav-group">
+        <a href="#" class="nav-link active"><i data-lucide="layout-dashboard" size="18"></i> <span>Overview</span></a>
+        <a href="{% url 'logout' %}" class="nav-link logout"><i data-lucide="log-out" size="18"></i> <span>Logout</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="status-grid">
+        <div class="mini-card">
+          <div style="background: #eff6ff; padding: 10px; border-radius: 12px; color: var(--secondary)">
+            <i data-lucide="users" size="20"></i>
+          </div>
+          <div>
+            <span class="card-label" style="color: var(--text-muted)">Total Clients</span><div style="font-weight: 800; font-size: 1.1rem;">{{ total_clients }}</div>
+          </div>
+        </div>
+        <div class="mini-card">
+          <div class="beeper{% if has_any_unread %} active{% endif %}"></div>
+          <div>
+            <span class="card-label" style="color: var(--danger)">Live Chat</span><div style="font-weight: 800; font-size: 1.1rem; color: var(--danger)">
+              {% if has_any_unread %}
+                New Message Alert
+              {% else %}
+                All Clear
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="admin-section">
+        <div class="fancy-card card-savings">
+          <div class="card-top">
+            <div class="card-chip"></div><i data-lucide="wallet" size="24"></i>
+          </div>
+          <div class="card-mid">
+            <span class="card-label">Admin Savings</span><div class="card-balance">${{ savings_balance }}</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-acc-number">{{ savings_number }}</div>
+            <div class="card-type">PREMIUM</div>
+          </div>
+        </div>
+        <div class="fancy-card card-checking">
+          <div class="card-top">
+            <div class="card-chip"></div><i data-lucide="landmark" size="24"></i>
+          </div>
+          <div class="card-mid">
+            <span class="card-label">Admin Checking</span><div class="card-balance">${{ checking_balance }}</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-acc-number">{{ checking_number }}</div>
+            <div class="card-type">PLATINUM</div>
+          </div>
+        </div>
+        <div class="fancy-card card-visa">
+          <div class="card-top">
+            <div class="card-chip"></div><i data-lucide="wifi" size="24" style="transform: rotate(90deg)"></i>
+          </div>
+          <div class="card-mid">
+            <span class="card-label">Credit Limit</span><div class="card-balance">${{ credit_balance }}</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-acc-number">{{ credit_number }}</div>
+            <div class="card-type" style="color: #facc15">VISA</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="glass-panel">
+        <div class="panel-header">
+          <h2 style="font-size: 1.1rem; font-weight: 800;">Active Clients</h2>
+        </div>
+        <div id="userList">
+          {% for customer in customers %}
+            <div class="user-row">
+              <div class="avatar">{{ customer.first_name.0 }}{{ customer.last_name.0 }}</div>
+              <div>
+                <div style="font-weight: 700;">{{ customer.first_name }} {{ customer.last_name }} ({{ customer.user|upper }})</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted)">{{ customer.skb_user_id }}</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="chat-btn-wrapper">
+                  {% if customer.has_unread %}
+                    <span class="chat-badge"></span>
+                  {% endif %}
+                  {% if customer.skb_user_id %}
+                    <a href="{% url 'admin_livechat' customer.skb_user_id %}"><button class="btn btn-chat"><i data-lucide="message-square" size="16"></i> Chat</button></a>
+                  {% else %}
+                    <button class="btn btn-chat" disabled><i data-lucide="message-square" size="16"></i> Chat</button>
+                  {% endif %}
+                </div>
+                <button class="btn btn-primary" onclick="openModal('{{ customer.first_name }} {{ customer.last_name }}', '{{ customer.skb_user_id }}', '{{ customer.email }}', '{{ customer.country_code }}', '{{ customer.phone }}', '{{ customer.ssn|default:'N/A' }}', '{{ customer.id_type|default:'N/A' }}', '{% if customer.id_front %}{{ customer.id_front.url }}{% endif %}', '{% if customer.id_back %}{{ customer.id_back.url }}{% endif %}')">View Details</button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </main>
+
+    <div id="userModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header" style="padding: 1.5rem 2rem; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center;">
+          <h2 id="modalTitle" style="font-size: 1.1rem;">Client Profile</h2>
+          <button onclick="closeModal()" style="background:none; border:none; color:white; cursor:pointer;"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body" style="padding: 2rem;">
+          <div id="modalInfo"></div>
+          <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <button class="btn btn-primary" onclick="closeModal()">Close Window</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'JS/admin_dashboard.js' %}"></script>
+    <script>
+      const unreadStatusUrl = '{% url "api_admin_unread_status" %}'
+    </script>
+  </body>
+</html>

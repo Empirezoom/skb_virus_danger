@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registration Successful</title>
+    {% load static %}
+    {% include 'includes/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'CSS/register.css' %}" />
+  </head>
+  <body>
+    <div class="logo">Skandia&nbsp;Bank(SKB)</div>
+    <div class="register-card">
+      <h2>Registration Complete</h2>
+      <p>Welcome — your account has been created.</p>
+      <div class="account-summary">
+        <p>
+          <strong>SKB User ID:</strong> {{ skb_user_id }}
+        </p>
+        <p>
+          <strong>Savings Account:</strong> {{ savings_account }} — Balance: ${{ savings_balance }}
+        </p>
+        <p>
+          <strong>Checking Account:</strong> {{ checking_account }} — Balance: ${{ checking_balance }}
+        </p>
+        <p>
+          <strong>Credit Account:</strong> {{ credit_account }} — Balance: ${{ credit_balance }}
+        </p>
+      </div>
+      <p>
+        You are now logged in. <a href="{% url 'home' %}">Go to your dashboard</a>.
+      </p>
+      <div style="margin: .8rem 0; display:flex; gap:1rem; align-items:center;">
+        <button id="printBtn" style="padding:.5rem 1rem;cursor:pointer">Print / Save</button>
+        {% if user.is_authenticated %}
+          <a href="{% url 'register_pdf' %}" class="download-btn" style="padding:.5rem 1rem;background:#007bff;color:#fff;border-radius:4px;text-decoration:none">Download PDF</a>
+        {% endif %}
+        <a href="{% url 'home' %}" style="margin-left:1rem">Go to your dashboard</a>
+      </div>
+
+      <div id="printable" class="account-summary" style="border:1px solid #e1e1e1;padding:1rem;border-radius:6px;background:#fff">
+        <p>
+          <strong>SKB User ID:</strong> {{ skb_user_id }}
+        </p>
+        <p>
+          <strong>Savings Account:</strong> {{ savings_account }} — Balance: ${{ savings_balance }}
+        </p>
+        <p>
+          <strong>Checking Account:</strong> {{ checking_account }} — Balance: ${{ checking_balance }}
+        </p>
+        <p>
+          <strong>Credit Account:</strong> {{ credit_account }} — Balance: ${{ credit_balance }}
+        </p>
+      </div>
+    </div>
+
+    <style>
+      /* Print styles: only show printable area */
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #printable,
+        #printable * {
+          visibility: visible;
+        }
+        #printable {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+        }
+        #printBtn {
+          display: none !important;
+        }
+      }
+    </style>
+
+    <script>
+      document.getElementById('printBtn').addEventListener('click', function () {
+        window.print()
+      })
+    </script>
+  </body>
+</html>

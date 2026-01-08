@@ -1,0 +1,310 @@
+﻿
+      :root {
+        --primary: #0a2540;
+        --secondary: #0072ce;
+        --accent: #f4f6fb;
+        --white: #fff;
+        --gray: #e5e7eb;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        --gold: #e6b800;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: var(--accent);
+        color: var(--primary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .logo {
+        margin-top: 2.5rem;
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary);
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        justify-content: center;
+        user-select: none;
+      }
+      .register-card {
+        background: var(--white);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        margin: 2.5rem 1rem 1.5rem 1rem;
+        padding: 2.2rem 1.2rem 1.5rem 1.2rem;
+        max-width: 420px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: fadeIn 0.7s;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .register-card h2 {
+        margin: 0 0 1.2rem 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: 1px;
+      }
+      .register-card form {
+        width: 100%;
+        max-width: 340px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .register-card label {
+        color: var(--primary);
+        font-weight: 500;
+        margin-top: 0.7rem;
+        margin-bottom: 0.2rem;
+        font-size: 1.05rem;
+        letter-spacing: 0.2px;
+      }
+      .register-card input[type="text"],
+      .register-card input[type="email"],
+      .register-card input[type="tel"],
+      .register-card input[type="file"] {
+        width: 100%;
+        padding: 1rem;
+        margin: 0.2rem 0 0.7rem 0;
+        border: 1.5px solid var(--gray);
+        border-radius: 7px;
+        font-size: 1.08rem;
+        background: var(--accent);
+        color: var(--primary);
+        transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+        outline: none;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+      }
+      .register-card input:focus {
+        border: 1.5px solid var(--secondary);
+        background: #fff;
+        color: var(--primary);
+        box-shadow: 0 2px 8px rgba(0, 114, 206, 0.1);
+      }
+      .register-card input[type="file"] {
+        padding: 0.5rem 0.5rem;
+        background: transparent;
+        color: var(--primary);
+        font-size: 1rem;
+        border: none;
+        box-shadow: none;
+      }
+      .pw-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+      }
+      .pw-row input[type="password"],
+      .pw-row input[type="text"] {
+        flex: 1 1 auto;
+        padding: 1rem;
+        border: 1.5px solid var(--gray);
+        border-radius: 7px;
+        background: var(--accent);
+        font-size: 1.08rem;
+        outline: none;
+      }
+      .pw-toggle {
+        background: transparent;
+        border: 1px solid var(--gray);
+        padding: 0.42rem 0.7rem;
+        border-radius: 7px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--primary);
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .pw-toggle:hover {
+        border-color: var(--secondary);
+        background: rgba(0, 114, 206, 0.06);
+      }
+      .register-card select {
+        width: 100%;
+        padding: 0.95rem;
+        margin: 0.2rem 0 0.7rem 0;
+        border: 1.5px solid var(--gray);
+        border-radius: 7px;
+        background: var(--accent);
+        font-size: 1.05rem;
+        color: var(--primary);
+      }
+      .register-card .file-label {
+        font-size: 1.05rem;
+        color: var(--primary);
+        margin-bottom: 0.2rem;
+        margin-top: 0.7rem;
+        font-weight: 500;
+      }
+      .register-card .file-preview {
+        font-size: 0.98rem;
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+        word-break: break-all;
+      }
+      .register-card .phone-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .register-card .phone-row input[type="text"] {
+        width: 4.5em;
+        min-width: 3.5em;
+        margin-right: 0;
+        margin-bottom: 0.7rem;
+        text-align: center;
+      }
+      .register-card .phone-row input[type="tel"] {
+        flex: 1 1 0;
+        margin-bottom: 0.7rem;
+      }
+      .register-card button {
+        width: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--secondary) 60%,
+          var(--primary) 100%
+        );
+        color: var(--white);
+        border: none;
+        padding: 1.1rem;
+        border-radius: 7px;
+        font-size: 1.13rem;
+        font-weight: bold;
+        margin-top: 1.2rem;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s, color 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 114, 206, 0.13);
+        letter-spacing: 1px;
+      }
+      .register-card button:hover {
+        background: linear-gradient(90deg, #005fa3 60%, #0a2540 100%);
+        color: #fff;
+        transform: translateY(-2px) scale(1.03);
+      }
+      .register-error {
+        color: #d32f2f;
+        font-size: 1.08rem;
+        margin-top: 0.7rem;
+        min-height: 1.2em;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-align: center;
+      }
+      .register-success {
+        color: #388e3c;
+        font-size: 1.08rem;
+        margin-top: 0.7rem;
+        min-height: 1.2em;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-align: center;
+      }
+      .login-link {
+        display: block;
+        margin-top: 2rem;
+        color: var(--secondary);
+        text-decoration: underline;
+        font-size: 1.08rem;
+        font-weight: 500;
+        transition: color 0.2s;
+        letter-spacing: 0.5px;
+        text-align: center;
+      }
+      .login-link:hover {
+        color: #005fa3;
+      }
+      .summary-card {
+        background: var(--accent);
+        color: var(--primary);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 1.2rem 1rem;
+        margin-top: 1.5rem;
+        width: 100%;
+        max-width: 340px;
+        text-align: left;
+        font-size: 1.08rem;
+        animation: fadeIn 0.7s;
+      }
+      .summary-card h3 {
+        color: var(--secondary);
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+      }
+      .summary-card .acc-type {
+        color: var(--primary);
+        font-weight: 600;
+      }
+      @media (max-width: 600px) {
+        .logo {
+          font-size: 1.3rem;
+          margin-top: 1.5rem;
+        }
+        .register-card {
+          margin: 1.2rem 0.3rem 1.2rem 0.3rem;
+          border-radius: 14px;
+          padding: 1.2rem 0.5rem 1rem 0.5rem;
+        }
+        .register-card h2 {
+          font-size: 1.2rem;
+        }
+        .register-card input,
+        .register-card button {
+          font-size: 1rem;
+          padding: 0.9rem;
+        }
+        .login-link {
+          font-size: 1rem;
+        }
+        .summary-card {
+          font-size: 1rem;
+          padding: 1rem 0.5rem;
+        }
+        .register-card .phone-row input[type="text"] {
+          width: 3.2em;
+          min-width: 2.8em;
+        }
+      }
+
+      .logo svg {
+        width: 2.2rem;
+        height: 2.2rem;
+        fill: var(--gold);
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        padding: 0.3rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+
+      .logo {
+        margin-top: 2.2rem;
+        font-size: 2.1rem;
+        font-weight: bold;
+        color: var(--gold);
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        justify-content: center;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+        user-select: none;
+      }
+    

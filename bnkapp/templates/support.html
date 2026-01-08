@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skandia&nbsp;Bank(SKB) - Support</title>
+    {% load static %}
+    {% include 'includes/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'CSS/support.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Skandia&nbsp;Bank(SKB)</div>
+      {% if user.is_authenticated %}
+        {% if has_unread_admin_message %}
+          <div class="user-greeting">🔔Hi, {{ user.username|title }} you have a new message on live chat💬.</div>
+        {% endif %}
+      {% endif %}
+      <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'payments' %}">Payments</a>
+        <a href="{% url 'support' %}" class="active">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </nav>
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'payments' %}">Payments</a>
+        <a href="{% url 'support' %}" class="active">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </div>
+    </header>
+    <section class="support-header">
+      <div class="support-header-content">
+        <h1>Support Center</h1>
+        <p>We're here to help. Contact us, submit a request, or browse our FAQs for quick answers.</p>
+      </div>
+      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Support" />
+    </section>
+    <div class="faq-section">
+      <h2>Frequently Asked Questions</h2>
+      <div class="quick-links">
+        <b>Quick Links:</b>
+        <a href="#faq1">Reset Password</a>
+        <a href="#faq2">Report Fraud</a>
+        <a href="#faq3">Dispute a Transaction</a>
+        <a href="#faq4">Update Contact Info</a>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" id="faq1">How do I reset my password?</button>
+        <div class="faq-answer">Go to the login page, click "Forgot Password", and follow the instructions. If you need further help, contact support using the form below.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" id="faq2">How do I report fraud or suspicious activity?</button>
+        <div class="faq-answer">
+          Call our 24/7 fraud hotline at <b>1-800-SKB-FRAUD</b> immediately. You can also use the support form below to notify us.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" id="faq3">How do I dispute a transaction?</button>
+        <div class="faq-answer">Go to your account page, find the transaction, and click "Dispute". You can also submit a dispute using the support form below.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" id="faq4">How do I update my contact information?</button>
+        <div class="faq-answer">Log in, go to your profile settings, and update your contact details. For urgent changes, contact support directly.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">How can I contact customer support?</button>
+        <div class="faq-answer">You can use live chat, email, phone, or the support request form on this page.</div>
+      </div>
+    </div>
+    <main class="support-main">
+      <div class="card">
+        <h2>Contact Us</h2>
+        <div class="contact-options">
+          <a href="mailto:support@chase.com">Email Support</a>
+          <a href="tel:18005551234">Call 1-800-555-1234</a>
+          <a href="{% url 'livechat' %}">Live Chat 💬</a>
+          <!-- <a href="{% url 'livechat' %}">Live Chat</a> -->
+        </div>
+        <form class="support-form" id="supportForm" autocomplete="off">
+          <label for="supportName">Name</label>
+          <input type="text" id="supportName" required />
+          <label for="supportEmail">Email</label>
+          <input type="email" id="supportEmail" required />
+          <label for="supportTopic">Topic</label>
+          <select id="supportTopic" required>
+            <option value="">Select a topic</option>
+            <option value="Account Access">Account Access</option>
+            <option value="Payments">Payments</option>
+            <option value="Fraud/Security">Fraud/Security</option>
+            <option value="Dispute">Dispute</option>
+            <option value="Other">Other</option>
+          </select>
+          <label for="supportMessage">Message</label>
+          <textarea id="supportMessage" required></textarea>
+          <button type="submit">Submit Request</button>
+          <div class="support-success" id="supportSuccess" style="display: none"></div>
+          <div class="support-error" id="supportError" style="display: none"></div>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Support Hours</h2>
+        <p>
+          <b>Phone & Chat:</b> 24/7
+        </p>
+        <p>
+          <b>Email:</b> Responses within 24 hours
+        </p>
+        <p>
+          <b>Branch Visits:</b> Mon-Fri 9am-5pm
+        </p>
+        <h2 style="margin-top: 2rem">Mailing Address</h2>
+        <p>
+          Skandia&nbsp;Bank(SKB) Support<br />4MC3+C55 <br />BjÃ¶rknÃ¤s, Sweden
+        </p>
+      </div>
+    </main>
+    <footer id="footerSection">{{ gen.copyright|safe }}</footer>
+    <script src="{% static 'JS/support.js' %}"></script>
+  </body>
+</html>

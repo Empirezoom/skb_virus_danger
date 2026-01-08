@@ -1,0 +1,4 @@
+<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+  <rect width="20" height="20" fill="#2775ca" rx="2"/>
+  <text x="10" y="14" font-size="5" fill="white" text-anchor="middle" font-family="Arial">USDC</text>
+</svg>

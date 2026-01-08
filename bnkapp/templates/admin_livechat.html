@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skandia&nbsp;Bank(SKB) - Admin Live Chat</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'CSS/admin_livechat.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Skandia&nbsp;Bank(SKB)</div>
+      {% if user.is_authenticated %}
+        <div class="user-greeting">Hi, {{ user.username }}</div>
+      {% endif %}
+      <nav>
+        <a href="{% url 'admin_dashboard' %}">Home</a>
+        <!-- <a href="{% url 'account' %}">Accounts</a> -->
+        <!-- <a href="{% url 'payments' %}">Payments</a> -->
+        {% comment %} <a href="{% url 'support' %}">Support</a> {% endcomment %}
+        <!-- <a href="#">Live Chat</a> -->
+        <!-- <a href="#" class="active">Admin Chat</a> -->
+        <a href="{% url 'logout' %}">Log Out</a>
+      </nav>
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <!-- <a href="{% url 'account' %}">Accounts</a> -->
+        <!-- <a href="{% url 'payments' %}">Payments</a> -->
+        <a href="{% url 'admin_dashboard' %}">Home</a>
+        {% comment %} <a href="{% url 'support' %}">Support</a> {% endcomment %}
+        <!-- <a href="#">Live Chat</a> -->
+        <!-- <a href="#" class="active">Admin Chat</a> -->
+        <a href="{% url 'logout' %}">Log Out</a>
+      </div>
+    </header>
+    <div class="chat-container">
+      <div class="chat-header">
+        <span class="status-dot"></span>
+        Admin Live Chat - {{ user_id }}
+      </div>
+      <div class="chat-actions">
+        <button id="sendPaymentBtn">Send Payment Details</button>
+        <button id="sendOtpBtn">Send OTP</button>
+      </div>
+      <div id="withdrawalOtpSection" style="display:none; padding: 10px; background: #f0f0f0; margin-bottom: 10px;">
+        <p>
+          Pending Withdrawal OTP: <strong id="pendingOtp"></strong>
+        </p>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <form class="chat-input-area" id="adminChatForm" autocomplete="off" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label class="chat-file-label">ðŸ“Ž<input type="file" class="chat-file-input" id="adminChatFileInput" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" /></label>
+        <span class="chat-file-preview" id="adminChatFilePreview"></span>
+        <input type="text" class="chat-input" id="adminChatInput" placeholder="Type your reply..." autocomplete="off" />
+        <button type="submit" class="chat-send-btn">Send</button>
+      </form>
+    </div>
+    <!-- Send Payment Modal -->
+    <div class="modal-bg" id="sendPaymentModalBg">
+      <div class="modal">
+        <button class="modal-close" onclick="closeSendPaymentModal()">&times;</button>
+        <h3>Send Payment Details</h3>
+        <form id="sendPaymentForm" autocomplete="off">
+          {% csrf_token %}
+          <label>
+            Mode<br />
+            <div class="custom-select" id="paymentMode">
+              <div class="select-selected">Select Mode</div>
+              <div class="select-items select-hide">
+                <div data-value="PayPal">
+                  <img src="{% static 'images/paypal.svg' %}" alt="PayPal" style="width:20px; height:20px;" /> PayPal
+                </div>
+                <div data-value="Cashapp">
+                  <img src="{% static 'images/cashapp.svg' %}" alt="Cashapp" style="width:20px; height:20px;" /> Cashapp
+                </div>
+                <div data-value="Zelle">
+                  <img src="{% static 'images/zelle.svg' %}" alt="Zelle" style="width:20px; height:20px;" /> Zelle
+                </div>
+                <div data-value="Venmo">
+                  <img src="{% static 'images/venmo.svg' %}" alt="Venmo" style="width:20px; height:20px;" /> Venmo
+                </div>
+                <div data-value="ADA">
+                  <img src="{% static 'images/ada.svg' %}" alt="ADA" style="width:20px; height:20px;" /> ADA
+                </div>
+                <div data-value="AVAX AVALANCHE">
+                  <img src="{% static 'images/avax.svg' %}" alt="AVAX" style="width:20px; height:20px;" /> AVAX AVALANCHE
+                </div>
+                <div data-value="BNB BEP20">
+                  <img src="{% static 'images/bnb.svg' %}" alt="BNB" style="width:20px; height:20px;" /> BNB BEP20
+                </div>
+                <div data-value="BTC">
+                  <img src="{% static 'images/btc.svg' %}" alt="BTC" style="width:20px; height:20px;" /> BTC
+                </div>
+                <div data-value="DOT">
+                  <img src="{% static 'images/dot.svg' %}" alt="DOT" style="width:20px; height:20px;" /> DOT
+                </div>
+                <div data-value="ETH">
+                  <img src="{% static 'images/eth.svg' %}" alt="ETH" style="width:20px; height:20px;" /> ETH
+                </div>
+                <div data-value="MATIC POLYGON">
+                  <img src="{% static 'images/matic.svg' %}" alt="MATIC" style="width:20px; height:20px;" /> MATIC POLYGON
+                </div>
+                <div data-value="PYUSD ARBITRUM">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD ARBITRUM
+                </div>
+                <div data-value="PYUSD AVALANCHE">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD AVALANCHE
+                </div>
+                <div data-value="PYUSD BASE">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD BASE
+                </div>
+                <div data-value="PYUSD BSC">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD BSC
+                </div>
+                <div data-value="PYUSD ETH">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD ETH
+                </div>
+                <div data-value="PYUSD OPTIMISM">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD OPTIMISM
+                </div>
+                <div data-value="PYUSD POLYGON">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD POLYGON
+                </div>
+                <div data-value="PYUSD SOLANA">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD SOLANA
+                </div>
+                <div data-value="PYUSD STELLAR">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD STELLAR
+                </div>
+                <div data-value="PYUSD TRON">
+                  <img src="{% static 'images/pyusd.svg' %}" alt="PYUSD" style="width:20px; height:20px;" /> PYUSD TRON
+                </div>
+                <div data-value="SOL">
+                  <img src="{% static 'images/sol.svg' %}" alt="SOL" style="width:20px; height:20px;" /> SOL
+                </div>
+                <div data-value="USDC BEP20">
+                  <img src="{% static 'images/usdc.svg' %}" alt="USDC" style="width:20px; height:20px;" /> USDC BEP20
+                </div>
+                <div data-value="USDC ERC20">
+                  <img src="{% static 'images/usdc.svg' %}" alt="USDC" style="width:20px; height:20px;" /> USDC ERC20
+                </div>
+                <div data-value="USDC SOLANA">
+                  <img src="{% static 'images/usdc.svg' %}" alt="USDC" style="width:20px; height:20px;" /> USDC SOLANA
+                </div>
+                <div data-value="USDT BEP20">
+                  <img src="{% static 'images/usdt.svg' %}" alt="USDT" style="width:20px; height:20px;" /> USDT BEP20
+                </div>
+                <div data-value="USDT ERC20">
+                  <img src="{% static 'images/usdt.svg' %}" alt="USDT" style="width:20px; height:20px;" /> USDT ERC20
+                </div>
+                <div data-value="USDT TRC20">
+                  <img src="{% static 'images/usdt.svg' %}" alt="USDT" style="width:20px; height:20px;" /> USDT TRC20
+                </div>
+              </div>
+            </div>
+          </label>
+          <label>Account/Wallet/Tag<br /><input id="paymentAccount" name="account" required /></label>
+          <div style="margin-top:1rem; text-align:right;">
+            <button type="submit" class="btn btn-primary">Send Payment Details</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Send OTP Modal -->
+    <div class="modal-bg" id="sendOtpModalBg">
+      <div class="modal">
+        <button class="modal-close" onclick="closeSendOtpModal()">&times;</button>
+        <h3>Send OTP</h3>
+        <form id="sendOtpForm" autocomplete="off">
+          {% csrf_token %}
+          <label>OTP<br /><input id="otpValue" name="otp" required /></label>
+          <div style="margin-top:1rem; text-align:right;">
+            <button type="submit" class="btn btn-primary">Send OTP</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <footer id="footerSection">{{ gen.copyright|safe }}</footer>
+    <script>
+      window.user_id = '{{ user_id }}'
+    </script>
+    <script src="{% static 'JS/admin_livechat.js' %}"></script>
+  </body>
+</html>

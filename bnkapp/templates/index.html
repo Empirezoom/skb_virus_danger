@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skandia&nbsp;Bank(SKB) - Home</title>
+    {% load static %}
+    {% include 'includes/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'CSS/index.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Skandia&nbsp;Bank(SKB)</div>
+      {% if user.is_authenticated %}
+        {% if has_unread_admin_message %}
+          <div class="user-greeting">🔔Hi, {{ user.username|title }} you have a new message on live chat💬.</div>
+        {% endif %}
+      {% endif %}
+      <nav>
+        <a href="{% url 'home' %}" class="active">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'payments' %}">Payments</a>
+        <a href="{% url 'support' %}">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </nav>
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="{% url 'home' %}" class="active">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'payments' %}">Payments</a>
+        <a href="{% url 'support' %}">Support</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+      </div>
+    </header>
+    <section class="hero" id="heroSection">
+      <div class="hero-content">
+        <h1>Welcome back, {{ user.username }}!</h1>
+        <p>Manage your accounts, transfer funds, pay bills, and moreâ€”all in one secure place.</p>
+        <button><a href="{% url 'register' %}">Open New Account</a></button>
+      </div>
+      <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Banking" />
+    </section>
+    <main class="dashboard" id="dashboardSection">
+      <div class="card">
+        <h2>Account Summary</h2>
+        {% if accounts %}
+          <ul class="account-list">
+            {% for account in accounts %}
+              <li>
+                <span>{{ account.get_account_type_display }} <small>****{{ account.account_number|slice:'-4:' }}</small></span>
+                <span style="font-weight:bold; color:{% if account.balance > 0 %}
+                    
+                    
+                    
+                    green
+
+
+
+                  {% elif account.balance < 0 %}
+                    
+                    
+                    
+                    red
+
+
+
+                  {% else %}
+                    
+                    
+                    
+                    black
+
+
+
+                  {% endif %};">
+                  ${{ account.balance }}
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No accounts available.</p>
+        {% endif %}
+      </div>
+      <div class="card">
+        <h2>Quick Actions</h2>
+        <div class="quick-actions">
+          <a href="{% url 'payments' %}">Transfer Funds</a>
+          <a href="{% url 'livechat' %}">Add Balance</a>
+          <a href="{% url 'livechat' %}">Withdrawal Funds</a>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Recent Transactions</h2>
+        <ul class="account-list">
+          {% for transaction in recent_transactions %}
+            <li>
+              <span>{{ transaction.description }}</span>
+              <span style="font-weight:bold; color:{% if transaction.direction == 'incoming' %}
+                  
+                  
+                  green
+
+
+                {% else %}
+                  
+                  
+                  red
+
+
+                {% endif %};">
+                ${{ transaction.amount }}
+              </span>
+            </li>
+          {% empty %}
+            <li>No recent transactions.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </main>
+    <footer id="footerSection">{{ gen.copyright|safe }}</footer>
+    <script src="{% static 'JS/index.js' %}"></script>
+  </body>
+</html>

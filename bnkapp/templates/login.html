@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="" type="image/x-icon" />
+    <title>Skandia&nbsp;Bank(SKB) - Login</title>
+    {% load static %}
+    {% include 'includes/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'CSS/login.css' %}" />
+  </head>
+  <body>
+    <div id="notification"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 32 32">
+        <circle cx="16" cy="16" r="16" />
+      </svg>Skandia&nbsp;Bank(SKB)
+    </div>
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="login-image-side"></div>
+        <div class="login-form-side">
+          <div class="icon">
+            <svg viewBox="0 0 32 32">
+              <path d="M16 18.5c-3.6 0-10.5 1.8-10.5 5.3V27h21v-3.2c0-3.5-6.9-5.3-10.5-5.3zm0-2.5a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
+            </svg>
+          </div>
+          <h2>Sign In to Your Account</h2>
+          {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          <form id="loginForm" method="post" action="{% url 'login' %}" autocomplete="off">
+            {% csrf_token %}
+            <input type="text" id="username" name="username" placeholder="Username" required autofocus />
+
+            <div class="password-container">
+              <input type="password" id="password" name="password" placeholder="Password" required />
+              <span class="toggle-password" id="togglePassword">SHOW</span>
+            </div>
+
+            <button type="submit">Login</button>
+            <a href="{% url 'register' %}" class="create-account-link">Don't have an account? Create one</a>
+          </form>
+        </div>
+      </div>
+    </div>
+    <footer style="
+        text-align: center;
+        padding: 1.2rem 0;
+        background: var(--primary);
+        color: var(--white);
+        margin-top: auto;
+      ">&copy; 2019 Skandia Bank(SKB), BjÃ¶rknÃ¤s, Sweden. All rights reserved.</footer>
+
+    <script src="{% static 'JS/login.js' %}"></script>
+  </body>
+</html>
