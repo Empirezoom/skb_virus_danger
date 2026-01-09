@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-go&znb)n#rkqn6(#=g^$d7mbu^180!9+#4r$-^ho5xm6gxryu#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://skb-bank.onrender.com']
+ALLOWED_HOSTS = ['skb-bank.onrender.com']
 
 
 # Application definition
