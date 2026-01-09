@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-go&znb)n#rkqn6(#=g^$d7mbu^180!9+#4r$-^ho5xm6gxryu#
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['skb-bank.onrender.com','localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['skb-bank.onrender.com','localhost', '127.0.0.1','https://skindia-bank.onrender.com']
 
 
 
