@@ -90,6 +90,7 @@ nav a.active {
   border-bottom: 1px solid var(--gray);
   color: var(--white);
   font-size: 1.1rem;
+  text-decoration: none;
 }
 .mobile-nav a:last-child {
   border-bottom: none;

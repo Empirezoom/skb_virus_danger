@@ -265,6 +265,11 @@ def payments(request):
     return render(request, 'payments.html', context)
 
 
+def healthz(request):
+    """Lightweight readiness/health endpoint for Render."""
+    return HttpResponse("ok")
+
+
 @login_required
 def get_accounts(request):
     """API endpoint to get user's accounts"""

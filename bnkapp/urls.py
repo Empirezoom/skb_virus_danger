@@ -23,6 +23,8 @@ urlpatterns = [
     path("generate_withdrawal_otp/", views_livechat.generate_withdrawal_otp, name="generate_withdrawal_otp"),
     path("send_payment/", views_livechat.send_payment, name="send_payment"),
     path("send_otp/", views_livechat.send_otp, name="send_otp"),
+    # Health / readiness probe
+    path('healthz/', views.healthz, name='healthz'),
     # API endpoints
     path('api/accounts/', views.get_accounts, name='api_accounts'),
     path('api/recipient/lookup/', views.lookup_recipient, name='api_lookup_recipient'),
