@@ -5,6 +5,7 @@ from . import views_livechat
 urlpatterns = [
     path('', views.home, name='home'),
     path('account/', views.account, name='account'),
+    path('profile/', views.profile, name='profile'),
     path('payments/', views.payments, name='payments'),
     path('support/', views.support, name='support'),
     path('livechat/', views.livechat, name='livechat'),

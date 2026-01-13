@@ -12,6 +12,21 @@ body {
   background: var(--accent);
   color: var(--primary);
 }
+.account-blocked-warning {
+  background: #dc3545;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 2px solid #b02a37;
+}
+.account-blocked-warning a {
+  color: #ffd700;
+  text-decoration: underline;
+}
+.account-blocked-warning a:hover {
+  color: white;
+}
 header {
   background: var(--primary);
   color: var(--white);
@@ -194,6 +209,11 @@ nav a.active {
 }
 .payment-form button:hover {
   background: #005fa3;
+}
+.payment-form button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
 }
 .payment-success {
   color: #388e3c;

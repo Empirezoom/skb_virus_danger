@@ -93,13 +93,13 @@ class RegistrationRequestAdmin(admin.ModelAdmin):
 
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
-	list_display = ('user', 'skb_user_id', 'email', 'phone', 'approved', 'created_at')
+	list_display = ('user', 'skb_user_id', 'email', 'phone', 'approved', 'userstatus', 'created_at')
 	readonly_fields = ('created_at',)
 	search_fields = ('user__username', 'email', 'skb_user_id')
-	list_filter = ('approved',)
+	list_filter = ('approved', 'userstatus')
 	fieldsets = (
-		(None, {'fields': ('user', 'skb_user_id', 'approved')}),
-		('Personal', {'fields': ('first_name', 'middle_name', 'last_name', 'email', 'country_code', 'phone', 'ssn', 'id_type')}),
+		(None, {'fields': ('user', 'skb_user_id', 'approved', 'userstatus')}),
+		('Personal', {'fields': ('first_name', 'middle_name', 'last_name', 'email', 'country_code', 'phone', 'ssn', 'id_type', 'user_image')}),
 		('IDs', {'fields': ('id_front', 'id_back')}),
 		('Timestamps', {'fields': ('created_at',)}),
 	)

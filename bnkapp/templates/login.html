@@ -57,6 +57,16 @@
         margin-top: auto;
       ">&copy; 2019 Skandia Bank(SKB), BjÃ¶rknÃ¤s, Sweden. All rights reserved.</footer>
 
+    {% if messages %}
+      {% for message in messages %}
+        {% if 'error' in message.tags %}
+          <script>
+            alert('{{ message|escapejs }}')
+          </script>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
     <script src="{% static 'JS/login.js' %}"></script>
   </body>
 </html>

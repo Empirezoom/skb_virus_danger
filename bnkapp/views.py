@@ -131,6 +131,30 @@ def account(request):
     return render(request, 'account.html', context)
 
 
+@login_required(login_url='login')
+def profile(request):
+    try:
+        profile = CustomerProfile.objects.get(user=request.user)
+    except CustomerProfile.DoesNotExist:
+        profile = None
+
+    accounts = []
+    total_balance = 0
+    has_unread_admin_message = False
+    if profile:
+        accounts = profile.accounts.all()
+        total_balance = sum(account.balance for account in accounts)
+        has_unread_admin_message = Message.objects.filter(user_id=profile.skb_user_id, sender='admin', read=False).exists()
+
+    context = {
+        'profile': profile,
+        'accounts': accounts,
+        'total_balance': total_balance,
+        'has_unread_admin_message': has_unread_admin_message
+    }
+    return render(request, 'profile.html', context)
+
+
 # @login_required(login_url='login')
 def payments(request):
     if not request.user.is_authenticated:

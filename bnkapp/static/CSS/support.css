@@ -46,6 +46,21 @@ nav a.active {
   color: var(--secondary);
   background: var(--white);
 }
+.profile-link {
+  padding: 0.5rem 0.7rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.profile-link:hover {
+  background: var(--white);
+}
+.profile-link svg {
+  fill: var(--white);
+  transition: fill 0.2s;
+}
+.profile-link:hover svg {
+  fill: var(--secondary);
+}
 .hamburger {
   display: none;
   flex-direction: column;
@@ -94,6 +109,20 @@ nav a.active {
 }
 .mobile-nav a:last-child {
   border-bottom: none;
+}
+.mobile-nav .profile-link {
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--gray);
+}
+.mobile-nav .profile-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.mobile-nav .profile-link svg {
+  fill: var(--white);
+  transition: fill 0.2s;
+}
+.mobile-nav .profile-link:hover svg {
+  fill: var(--secondary);
 }
 .mobile-nav.show {
   display: flex;

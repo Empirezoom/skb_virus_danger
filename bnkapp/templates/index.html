@@ -21,7 +21,17 @@
         <a href="{% url 'account' %}">Accounts</a>
         <a href="{% url 'payments' %}">Payments</a>
         <a href="{% url 'support' %}">Support</a>
-        <a href="{% url 'logout' %}">Log Out</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="profile-link">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M12 14c-6.1 0-8 4-8 4v2h16v-2s-1.9-4-8-4z" />
+            </svg>
+          </a>
+          <a href="{% url 'logout' %}">Log Out</a>
+        {% else %}
+          <a href="{% url 'login' %}">Log In</a>
+        {% endif %}
       </nav>
       <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
         <span></span>
@@ -33,13 +43,33 @@
         <a href="{% url 'account' %}">Accounts</a>
         <a href="{% url 'payments' %}">Payments</a>
         <a href="{% url 'support' %}">Support</a>
-        <a href="{% url 'logout' %}">Log Out</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="profile-link">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M12 14c-6.1 0-8 4-8 4v2h16v-2s-1.9-4-8-4z" />
+            </svg>
+          </a>
+          <a href="{% url 'logout' %}">Log Out</a>
+        {% else %}
+          <a href="{% url 'login' %}">Log In</a>
+        {% endif %}
       </div>
     </header>
+    {% if user.is_authenticated and profile and not profile.userstatus %}
+      <div class="account-blocked-warning">
+        <p>Your Account Has been Locked. Contact customer support via <a href="{% url 'livechat' %}">live chat</a> for more info.</p>
+      </div>
+    {% endif %}
     <section class="hero" id="heroSection">
       <div class="hero-content">
-        <h1>Welcome back, {{ user.username }}!</h1>
-        <p>Manage your accounts, transfer funds, pay bills, and moreâ€”all in one secure place.</p>
+        {% if user.is_authenticated %}
+          <h1>Welcome back, {{ user.username }}!</h1>
+          <p>Manage your accounts, transfer funds, pay bills, and more—all in one secure place.</p>
+        {% else %}
+          <h1>Welcome to Skandia Bank</h1>
+          <p>Your trusted partner for secure banking solutions.</p>
+        {% endif %}
         <button><a href="{% url 'register' %}">Open New Account</a></button>
       </div>
       <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Banking" />
@@ -56,7 +86,41 @@
                     
                     
                     
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+
+                    
                     green
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -64,7 +128,27 @@
                     
                     
                     
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+           
+                    
+                    
                     red
+
+
+
+
+
+
+
+
 
 
 
@@ -72,7 +156,18 @@
                     
                     
                     
+                    
+                    
+                    
+                    
+            
+                    
                     black
+
+
+
+
+
 
 
 
@@ -103,13 +198,105 @@
               <span style="font-weight:bold; color:{% if transaction.direction == 'incoming' %}
                   
                   
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
                   green
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 {% else %}
                   
                   
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
                   red
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 {% endif %};">

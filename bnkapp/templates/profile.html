@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skandia&nbsp;Bank(SKB) - Profile</title>
+    {% load static %}
+    {% include 'includes/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'CSS/profile.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Skandia&nbsp;Bank(SKB)</div>
+      {% if user.is_authenticated %}
+        {% if has_unread_admin_message %}
+          <div class="user-greeting">🔔Hi, {{ user.username|title }} you have a new message on live chat💬.</div>
+        {% endif %}
+      {% endif %}
+      <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'profile' %}" class="active">Profile</a>
+        <a href="{% url 'payments' %}">Payments</a>
+        <a href="{% url 'support' %}">Support</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="profile-link">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M12 14c-6.1 0-8 4-8 4v2h16v-2s-1.9-4-8-4z" />
+            </svg>
+          </a>
+          <a href="{% url 'logout' %}">Log Out</a>
+        {% else %}
+          <a href="{% url 'login' %}">Log In</a>
+        {% endif %}
+      </nav>
+      <div class="hamburger" id="hamburger" aria-label="Open menu" tabindex="0">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'account' %}">Accounts</a>
+        <a href="{% url 'profile' %}" class="active">Profile</a>
+        <a href="{% url 'payments' %}">Payments</a>
+        <a href="{% url 'support' %}">Support</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="profile-link">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M12 14c-6.1 0-8 4-8 4v2h16v-2s-1.9-4-8-4z" />
+            </svg>
+          </a>
+          <a href="{% url 'logout' %}">Log Out</a>
+        {% else %}
+          <a href="{% url 'login' %}">Log In</a>
+        {% endif %}
+      </div>
+    </header>
+    <section class="account-header">
+      <div class="account-header-content">
+        <h1>Your Profile</h1>
+        <p>Manage your personal information and account settings.</p>
+      </div>
+    </section>
+    <main class="account-main">
+      {% if profile %}
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-image">
+              {% if profile.user_image %}
+                <img src="{{ profile.user_image.url }}" alt="Profile Image" />
+              {% else %}
+                <svg viewBox="0 0 24 24" width="80" height="80">
+                  <circle cx="12" cy="8" r="4" fill="#007bff" />
+                  <path d="M12 14c-6.1 0-8 4-8 4v2h16v-2s-1.9-4-8-4z" fill="#007bff" />
+                </svg>
+              {% endif %}
+            </div>
+            <div class="profile-info-header">
+              <h2>{{ profile.first_name }} {{ profile.last_name }}</h2>
+              <p>{{ user.username }}</p>
+            </div>
+          </div>
+          <div class="profile-details">
+            <h3>Personal Information</h3>
+            <div class="profile-info">
+              <div class="info-item">
+                <label>Username:</label>
+                <span>{{ user.username }}</span>
+              </div>
+              <div class="info-item">
+                <label>First Name:</label>
+                <span>{{ profile.first_name }}</span>
+              </div>
+              <div class="info-item">
+                <label>Last Name:</label>
+                <span>{{ profile.last_name }}</span>
+              </div>
+              <div class="info-item">
+                <label>Email:</label>
+                <span>{{ profile.email }}</span>
+              </div>
+              <div class="info-item">
+                <label>Phone:</label>
+                <span>{{ profile.phone|default:'Not provided' }}</span>
+              </div>
+              <div class="info-item">
+                <label>SKB User ID:</label>
+                <span>{{ profile.skb_user_id }}</span>
+              </div>
+              <div class="info-item total-balance">
+                <label>Total Balance:</label>
+                <span>${{ total_balance|floatformat:2 }}</span>
+              </div>
+              <div class="info-item">
+                <label>Approval Status:</label>
+                <span>
+                  {% if profile.approved %}
+                    Verified ✅
+                  {% elif profile.approved == False %}
+                    Unverified
+                  {% else %}
+                    Pending
+                  {% endif %}
+                </span>
+              </div>
+              <div class="info-item">
+                <label>Account Status:</label>
+                <span class="{% if not profile.userstatus %}blocked-status{% endif %}">
+                  {% if profile.userstatus %}
+                    Active
+                  {% else %}
+                    Blocked
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% if not profile.userstatus %}
+          <div class="account-blocked-warning">
+            <p>
+              Your Account Has been Locked. Contact customer support via <a href="{% url 'livechat' %}">live chat</a> for more info.
+            </p>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="profile-card">
+          <h2>Profile Not Found</h2>
+          <p>Your profile information is not available. Please contact support.</p>
+        </div>
+      {% endif %}
+    </main>
+    <footer>{{ gen.copyright|safe }}</footer>
+    <script src="{% static 'JS/account.js' %}"></script>
+  </body>
+</html>

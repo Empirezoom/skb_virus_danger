@@ -77,6 +77,8 @@ class CustomerProfile(models.Model):
     phone = models.CharField(max_length=30)
     ssn = models.CharField(max_length=20, blank=True, null=True)
     approved = models.BooleanField(default=False)
+    userstatus = models.BooleanField(default=True)  # True = Active, False = Blocked
+    user_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     id_type = models.CharField(max_length=50, blank=True)
     id_front = models.FileField(upload_to='ids/', blank=True, null=True)
     id_back = models.FileField(upload_to='ids/', blank=True, null=True)
